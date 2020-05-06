@@ -5,6 +5,8 @@ namespace Akeneo\Pim\Enrichment\Component\Product\Updater;
 use Akeneo\Pim\Enrichment\Component\Product\Model\EntityWithValuesInterface;
 use Akeneo\Tool\Component\StorageUtils\Exception\InvalidObjectException;
 use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyTypeException;
+use Akeneo\Tool\Component\StorageUtils\Exception\UnknownAttributeException;
+use Akeneo\Tool\Component\StorageUtils\Exception\UnknownPropertyException;
 use Akeneo\Tool\Component\StorageUtils\Updater\ObjectUpdaterInterface;
 use Akeneo\Tool\Component\StorageUtils\Updater\PropertySetterInterface;
 use Doctrine\Common\Util\ClassUtils;
@@ -61,7 +63,11 @@ class EntityWithValuesUpdater implements ObjectUpdaterInterface
         foreach ($values as $code => $value) {
             foreach ($value as $data) {
                 $options = ['locale' => $data['locale'], 'scope' => $data['scope']];
-                $this->propertySetter->setData($entityWithValues, $code, $data['data'], $options);
+                try {
+                    $this->propertySetter->setData($entityWithValues, $code, $data['data'], $options);
+                } catch (UnknownPropertyException $exception) {
+                    throw UnknownAttributeException::unknownAttribute($code, $exception);
+                }
             }
         }
     }

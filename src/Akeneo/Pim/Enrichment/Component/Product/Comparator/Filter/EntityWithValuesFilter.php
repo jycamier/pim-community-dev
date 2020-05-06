@@ -6,6 +6,7 @@ use Akeneo\Pim\Enrichment\Component\Product\Comparator\ComparatorRegistry;
 use Akeneo\Pim\Enrichment\Component\Product\Model\EntityWithValuesInterface;
 use Akeneo\Pim\Structure\Component\Repository\AttributeRepositoryInterface;
 use Akeneo\Tool\Component\StorageUtils\Exception\InvalidPropertyTypeException;
+use Akeneo\Tool\Component\StorageUtils\Exception\UnknownAttributeException;
 use Akeneo\Tool\Component\StorageUtils\Exception\UnknownPropertyException;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -104,7 +105,7 @@ class EntityWithValuesFilter implements FilterInterface
         $result = [];
         foreach ($values as $code => $value) {
             if (!isset($this->attributeTypeByCodes[$code])) {
-                throw UnknownPropertyException::unknownProperty($code);
+                throw UnknownAttributeException::unknownAttribute($code);
             }
 
             $comparator = $this->comparatorRegistry->getAttributeComparator($this->attributeTypeByCodes[$code]);
