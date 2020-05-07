@@ -23,10 +23,12 @@ type QuantifiedAssociationCollection = {
   };
 };
 
+type AssociationIdentifiers = {products: Identifier[]; product_models: Identifier[]};
+
 const getQuantifiedAssociationCollectionIdentifiers = (
   quantifiedAssociationCollection: QuantifiedAssociationCollection,
   associationTypeCode: string
-): Identifier[] => {
+): AssociationIdentifiers => {
   const productIdentifiers = quantifiedAssociationCollection[associationTypeCode].products.map(
     ({identifier}) => identifier
   );
@@ -34,7 +36,7 @@ const getQuantifiedAssociationCollectionIdentifiers = (
     ({identifier}) => identifier
   );
 
-  return [...productIdentifiers, ...productModelIdentifiers];
+  return {products: productIdentifiers, product_models: productModelIdentifiers};
 };
 
 const filterOnLabelOrIdentifier = (searchValue: string) => (entity: {label: string; identifier: Identifier}): boolean =>
@@ -60,8 +62,7 @@ type Product = {
 
 const productFetcher = async (
   router: Router,
-  productIdentifiers: Identifier[],
-  productModelIdentifiers: Identifier[],
+  identifiers: AssociationIdentifiers,
   channel: ChannelCode,
   locale: LocaleCode
 ): Promise<Product[]> => {
@@ -72,13 +73,13 @@ const productFetcher = async (
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({products: productIdentifiers, product_models: productModelIdentifiers}),
+    body: JSON.stringify(identifiers),
   });
 
   return (await response.json()).items;
 };
 
-const useProducts = (identifiers: Identifier[]) => {
+const useProducts = (identifiers: AssociationIdentifiers) => {
   const [products, setProducts] = useState<Product[]>([]);
   const userContext = useUserContext();
   const router = useRouter();
@@ -86,7 +87,7 @@ const useProducts = (identifiers: Identifier[]) => {
   useEffect(() => {
     (async () => {
       setProducts(
-        await productFetcher(router, identifiers, [], userContext.get('catalogScope'), userContext.get('catalogLocale'))
+        await productFetcher(router, identifiers, userContext.get('catalogScope'), userContext.get('catalogLocale'))
       );
     })();
   }, [JSON.stringify(identifiers), userContext, router]);

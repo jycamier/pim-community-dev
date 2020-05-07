@@ -6,6 +6,8 @@ use Akeneo\Pim\Enrichment\Bundle\Elasticsearch\Filter\Field\IdentifierFilter;
 use Akeneo\Pim\Enrichment\Component\Product\Grid\Query\FetchProductAndProductModelRows;
 use Akeneo\Pim\Enrichment\Component\Product\Grid\Query\FetchProductAndProductModelRowsParameters;
 use Akeneo\Pim\Enrichment\Component\Product\Grid\ReadModel\Rows;
+use Akeneo\Pim\Enrichment\Component\Product\Model\ProductInterface;
+use Akeneo\Pim\Enrichment\Component\Product\Model\ProductModelInterface;
 use Akeneo\Pim\Enrichment\Component\Product\Normalizer\InternalApi\LinkedProductsNormalizer;
 use Akeneo\Pim\Enrichment\Component\Product\Query\Filter\Operators;
 use Akeneo\Pim\Enrichment\Component\Product\Query\ProductQueryBuilderFactoryInterface;
@@ -49,11 +51,11 @@ class GetFromIdentifiersAction
         $localeCode = $request->query->get('locale');
         $identifiers = json_decode($request->getContent(), true);
 
-        $productRows = $this->findProductsByIdentifiers($identifiers['products'], $localeCode, $channelCode);
-        $productModelRows = $this->findProductsByIdentifiers($identifiers['product_models'], $localeCode, $channelCode);
+        $productRows = $this->findProductsByIdentifiers($identifiers['products'], ProductInterface::class, $localeCode, $channelCode);
+        $productModelRows = $this->findProductsByIdentifiers($identifiers['product_models'], ProductModelInterface::class, $localeCode, $channelCode);
 
-        $normalizedProducts = $this->linkedProductNormalizer->normalize($productRows, $channelCode, $localeCode);
-        $normalizedProductModels = $this->linkedProductNormalizer->normalize($productModelRows, $channelCode, $localeCode);
+        $normalizedProducts = $this->linkedProductsNormalizer->normalize($productRows, $channelCode, $localeCode);
+        $normalizedProductModels = $this->linkedProductsNormalizer->normalize($productModelRows, $channelCode, $localeCode);
 
         return new JsonResponse([
             'items' => array_merge($normalizedProducts, $normalizedProductModels),
@@ -63,6 +65,7 @@ class GetFromIdentifiersAction
 
     private function findProductsByIdentifiers(
         array $productIdentifiers,
+        string $type,
         string $localeCode,
         string $channelCode
     ): Rows {
@@ -74,6 +77,7 @@ class GetFromIdentifiersAction
             ]
         );
         $queryBuilder->addFilter(IdentifierFilter::IDENTIFIER_KEY, Operators::IN_LIST, $productIdentifiers);
+        $queryBuilder->addFilter('entity_type', Operators::EQUALS, $type);
         $queryBuilder->addSorter('updated', 'DESC');
 
         $getRowsQueryParameters = new FetchProductAndProductModelRowsParameters(

@@ -276,8 +276,8 @@ define([
 
       const associations = {
         PACK: {
-          products: [{identifier: 'bag', quantity: '25'}],
-          product_models: []
+          products: [{identifier: '1111111171', quantity: '25'}],
+          product_models: [{identifier: 'amor', quantity: '12'}]
         }
       };
 
