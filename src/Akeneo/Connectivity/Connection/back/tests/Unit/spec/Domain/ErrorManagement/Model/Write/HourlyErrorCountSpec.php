@@ -1,20 +1,14 @@
 <?php
-
 declare(strict_types=1);
 
 namespace spec\Akeneo\Connectivity\Connection\Domain\Audit\Model\Write;
 
-use Akeneo\Connectivity\Connection\Domain\Audit\Model\EventTypes;
 use Akeneo\Connectivity\Connection\Domain\Common\HourlyInterval;
-use Akeneo\Connectivity\Connection\Domain\Audit\Model\Write\HourlyEventCount;
+use Akeneo\Connectivity\Connection\Domain\ErrorManagement\ErrorTypes;
+use Akeneo\Connectivity\Connection\Domain\ErrorManagement\Model\Write\HourlyErrorCount;
 use PhpSpec\ObjectBehavior;
 
-/**
- * @author Pierre Jolly <pierre.holly@akeneo.com>
- * @copyright 2020 Akeneo SAS (http://www.akeneo.com)
- * @license http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
- */
-class HourlyEventCountSpec extends ObjectBehavior
+class HourlyErrorCountSpec extends ObjectBehavior
 {
     public function let(): void
     {
@@ -24,13 +18,13 @@ class HourlyEventCountSpec extends ObjectBehavior
                 new \DateTimeImmutable('2020-01-01 10:00:00', new \DateTimeZone('UTC'))
             ),
             329,
-            EventTypes::PRODUCT_CREATED
+            ErrorTypes::BUSINESS
         );
     }
 
     public function it_is_initializable(): void
     {
-        $this->shouldHaveType(HourlyEventCount::class);
+        $this->shouldHaveType(HourlyErrorCount::class);
     }
 
     public function it_returns_the_connection_code(): void
@@ -47,19 +41,19 @@ class HourlyEventCountSpec extends ObjectBehavior
             'magento',
             $hourlyInterval,
             329,
-            EventTypes::PRODUCT_CREATED
+            ErrorTypes::BUSINESS
         );
 
         $this->hourlyInterval()->shouldBe($hourlyInterval);
     }
 
-    public function it_returns_the_event_count(): void
+    public function it_returns_the_error_count(): void
     {
-        $this->eventCount()->shouldBe(329);
+        $this->errorCount()->shouldBe(329);
     }
 
-    public function it_returns_the_event_type(): void
+    public function it_returns_the_error_type(): void
     {
-        $this->eventType()->shouldBe(EventTypes::PRODUCT_CREATED);
+        $this->errorType()->shouldBe(ErrorTypes::BUSINESS);
     }
 }
