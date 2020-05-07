@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import {Button, SearchBar, AkeneoThemeProvider} from '@akeneo-pim-community/shared';
+import {Button, SearchBar, AkeneoThemeProvider, LocaleCode, ChannelCode} from '@akeneo-pim-community/shared';
 import {
   DependenciesProvider,
   useTranslate,
@@ -8,9 +8,6 @@ import {
   useRouter,
   Router,
 } from '@akeneo-pim-community/legacy-bridge';
-import {LocaleCode} from 'pimui/common/model/locale';
-// import {useRouter, useUserContext, Router} from 'pimui/react/legacy-bridge/src';
-import {ChannelCode} from 'pimui/common/model/channel';
 
 type Identifier = string;
 

@@ -1,6 +1,7 @@
-import {getLabel} from 'pimui/js/i18n';
-import {Locale, LocaleCode, isLocales, denormalizeLocale} from 'pimui/common/model/locale';
-import {isLabelCollection, LabelCollection} from 'pimui/common/model/label-collection';
+import {Locale, LocaleCode, isLocales, denormalizeLocale} from '../models';
+import {isLabelCollection, LabelCollection} from '../models';
+
+const getLabel = require('pimui/js/i18n');
 
 type ChannelCode = string;
 
