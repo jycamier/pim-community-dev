@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
-import {Button, SearchBar, AkeneoThemeProvider, LocaleCode, ChannelCode} from '@akeneo-pim-community/shared';
 import {
   DependenciesProvider,
   useTranslate,
@@ -8,6 +7,15 @@ import {
   useRouter,
   Router,
 } from '@akeneo-pim-community/legacy-bridge';
+import {
+  Button,
+  SearchBar,
+  AkeneoThemeProvider,
+  EditIcon,
+  CloseIcon,
+  TransparentButton,
+} from '@akeneo-pim-community/shared';
+import {ChannelCode, LocaleCode} from '@akeneo-pim-community/shared/models';
 
 type Identifier = string;
 
@@ -98,10 +106,17 @@ const useProducts = (identifiers: AssociationIdentifiers) => {
 const RowContainer = styled.tr`
   height: 74px;
   border-bottom: 1px solid ${props => props.theme.color.grey70};
-  padding: 0 15px;
 
   :hover {
     background-color: ${props => props.theme.color.grey60};
+  }
+
+  td:first-child {
+    padding-left: 15px;
+  }
+
+  td {
+    width: 15%;
   }
 `;
 
@@ -119,6 +134,8 @@ const HeaderCell = styled.th`
   height: 44px;
   box-shadow: 0 1px 0 ${props => props.theme.color.grey120};
   background-color: ${props => props.theme.color.white};
+  padding-right: 20px;
+  white-space: nowrap;
 
   :first-child {
     padding-left: 20px;
@@ -129,6 +146,7 @@ const LabelCell = styled.td<{isProduct: boolean}>`
   font-style: italic;
   font-weight: bold;
   color: ${({theme, isProduct}) => (isProduct ? theme.color.purple100 : 'inherit')};
+  min-width: 200px;
 `;
 
 const Badge = styled.span`
@@ -146,6 +164,17 @@ const QuantityInput = styled.input`
   height: 40px;
   padding: 12px 15px;
   color: inherit;
+`;
+
+const RowActions = styled.div`
+  display: flex;
+  padding: 0 20px;
+`;
+
+const RowAction = styled(TransparentButton)`
+  :not(:first-child) {
+    margin-left: 20px;
+  }
 `;
 
 type RowProps = {
@@ -177,7 +206,17 @@ const Row = ({product}: RowProps) => {
         )}
       </td>
       <td>
-        <QuantityInput type="number" defaultValue={1} />
+        <QuantityInput type="number" defaultValue={1} min={1} />
+      </td>
+      <td>
+        <RowActions>
+          <RowAction onClick={() => {}}>
+            <EditIcon size={20} />
+          </RowAction>
+          <RowAction onClick={() => {}}>
+            <CloseIcon title={__('pim_enrich.entity.product.module.associations.remove')} size={20} />
+          </RowAction>
+        </RowActions>
       </td>
     </RowContainer>
   );
@@ -226,11 +265,12 @@ const Panel = ({value, associationType, onOpenPicker}: QuantifiedAssociationsPro
             <HeaderCell>{__('pim_common.completeness')}</HeaderCell>
             <HeaderCell>{__('pim_enrich.entity.product.module.associations.variant_products')}</HeaderCell>
             <HeaderCell>{__('pim_enrich.entity.product.module.associations.quantified.quantity')}</HeaderCell>
+            <HeaderCell />
           </tr>
         </thead>
         <tbody>
           {filteredProducts.map(product => (
-            <Row key={product.id} product={product} />
+            <Row key={product.document_type + product.id} product={product} />
           ))}
         </tbody>
       </TableContainer>
